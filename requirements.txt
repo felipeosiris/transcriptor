@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 faster-whisper
 python-multipart
+unidecode

@@ -1,0 +1,16 @@
+# Transcriptor + Order Free (FastAPI + faster-whisper)
+
+API que transcribe audio a texto y opcionalmente lo convierte en una orden estructurada **sin catálogo** (`mode=order_free`).
+
+## Endpoints
+- `GET /health`
+- `POST /transcribe` (multipart: `file=@audio.*`, form opcional: `language=es`, `mode=order_free`)
+
+## Ejemplos
+
+### 1) Texto crudo
+```bash
+curl -X POST "https://TU-URL/transcribe" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@hola.ogg" \
+  -F "language=es"
