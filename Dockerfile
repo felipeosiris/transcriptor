@@ -15,4 +15,5 @@ ENV COMPUTE_TYPE=int8
 
 EXPOSE 8000
 # MUY IMPORTANTE: usar el puerto que asigne Railway
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --proxy-headers --forwarded-allow-ips='*' --port ${PORT:-8000}"]
+
