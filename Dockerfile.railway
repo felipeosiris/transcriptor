@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# ffmpeg (decodificar audio) + libgomp1 (runtime OpenMP requerido por faster-whisper/ctranslate2)
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y ffmpeg libgomp1 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -20,6 +20,5 @@ ENV PYTHONUNBUFFERED=1
 # Exponer puerto
 EXPOSE 8000
 
-# Comando de inicio - Railway manejará el puerto automáticamente
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
-
+# Comando de inicio simple
+CMD uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
