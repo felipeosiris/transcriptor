@@ -12,8 +12,11 @@ COPY main.py /app/
 # Modelo por defecto (puedes sobreescribir en Railway Variables)
 ENV WHISPER_MODEL=tiny
 ENV COMPUTE_TYPE=int8
+# Variables para Railway
+ENV PORT=8000
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
-# MUY IMPORTANTE: usar el puerto que asigne Railway
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --proxy-headers --forwarded-allow-ips='*' --port ${PORT:-8000}"]
+# Comando optimizado para Railway
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --timeout-keep-alive 30"]
 

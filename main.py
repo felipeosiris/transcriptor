@@ -48,7 +48,24 @@ def health():
         "status": status,
         "model": MODEL_NAME,
         "compute_type": COMPUTE_TYPE,
+        "version": "2.0.0",
+        "railway": True,
         **detail
+    }
+
+@app.get("/")
+def root():
+    return {
+        "message": "Transcriptor API",
+        "version": "2.0.0",
+        "endpoints": [
+            "/health",
+            "/transcribe",
+            "/transcribe-video", 
+            "/transcribe-video-subtitles",
+            "/transcribe-stream",
+            "/transcribe-stream-short"
+        ]
     }
 
 @app.post("/transcribe")
@@ -116,6 +133,9 @@ async def transcribe_video(
             'quiet': True,
             'no_warnings': True,
             'extract_flat': False,
+            'socket_timeout': 30,  # Timeout para Railway
+            'retries': 2,  # Menos reintentos para Railway
+            'max_filesize': 200 * 1024 * 1024,  # Límite de 200MB para Railway
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -222,6 +242,9 @@ async def transcribe_video_subtitles(
             'quiet': True,
             'no_warnings': True,
             'extract_flat': False,
+            'socket_timeout': 30,  # Timeout para Railway
+            'retries': 2,  # Menos reintentos para Railway
+            'max_filesize': 200 * 1024 * 1024,  # Límite de 200MB para Railway
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
