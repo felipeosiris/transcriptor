@@ -76,11 +76,19 @@ async def transcribe(
             status_code=500
         )
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{file.filename}") as tmp:
-        tmp.write(await file.read())
-        tmp_path = tmp.name
-
+    tmp_path = None
     try:
+        # Leer el archivo
+        file_content = await file.read()
+        if not file_content:
+            return JSONResponse({"error": "Empty file"}, status_code=400)
+        
+        # Crear archivo temporal
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{file.filename}") as tmp:
+            tmp.write(file_content)
+            tmp_path = tmp.name
+
+        # Transcribir
         segments, info = m.transcribe(tmp_path, language=language, vad_filter=True)
         text = "".join(seg.text for seg in segments).strip()
 
@@ -90,9 +98,17 @@ async def transcribe(
             "duration": info.duration
         })
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+        import traceback
+        error_msg = str(e)
+        traceback_str = traceback.format_exc()
+        return JSONResponse({
+            "error": error_msg,
+            "traceback": traceback_str
+        }, status_code=500)
     finally:
-        try:
-            os.remove(tmp_path)
-        except Exception:
-            pass
+        # Limpiar archivo temporal
+        if tmp_path:
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
