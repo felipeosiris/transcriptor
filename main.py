@@ -34,20 +34,27 @@ def get_model():
 
 @app.get("/health")
 def health():
-    status = "ok"
-    detail = {}
-    if load_error:
-        status = "error"
-        detail["load_error"] = load_error
-    elif model is None:
-        status = "initializing"  # aún no hemos cargado el modelo (se cargará al primer /transcribe)
-    return {
-        "status": status,
-        "model": MODEL_NAME,
-        "compute_type": COMPUTE_TYPE,
-        "version": "2.0.0",
-        **detail
-    }
+    """Health check endpoint - responde rápido sin cargar el modelo"""
+    try:
+        status = "ok"
+        detail = {}
+        if load_error:
+            status = "error"
+            detail["load_error"] = load_error
+        elif model is None:
+            status = "initializing"  # aún no hemos cargado el modelo (se cargará al primer /transcribe)
+        return {
+            "status": status,
+            "model": MODEL_NAME,
+            "compute_type": COMPUTE_TYPE,
+            "version": "2.0.0",
+            **detail
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e)
+        }
 
 @app.get("/")
 def root():

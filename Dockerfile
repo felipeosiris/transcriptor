@@ -9,8 +9,12 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código
+# Copiar código y script de inicio
 COPY main.py .
+COPY start.sh .
+
+# Hacer el script ejecutable
+RUN chmod +x start.sh
 
 # Variables de entorno
 ENV WHISPER_MODEL=tiny
@@ -20,6 +24,6 @@ ENV PYTHONUNBUFFERED=1
 # Exponer puerto (Railway mapeará su puerto dinámico a este)
 EXPOSE 8000
 
-# Comando de inicio usando la variable PORT de Railway
-CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"
+# Usar el script de inicio
+CMD ["./start.sh"]
 
