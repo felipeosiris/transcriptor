@@ -1,17 +1,23 @@
 FROM python:3.11-slim
 
-# ffmpeg para soportar mp3/mp4/ogg/wav
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+# ffmpeg para soportar mp3/mp4/ogg/wav + libgomp1 (requerido por faster-whisper/ctranslate2)
+RUN apt-get update && apt-get install -y ffmpeg libgomp1 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt /app/
+
+# Copiar requirements e instalar dependencias
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py /app/
+# Copiar código
+COPY main.py .
 
-# Modelo por defecto (cámbialo si quieres más precisión: tiny/base/small/medium/large-v3)
+# Variables de entorno
 ENV WHISPER_MODEL=base
 ENV COMPUTE_TYPE=int8
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Usar variable PORT de Railway (con fallback a 8000)
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"
