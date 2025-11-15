@@ -34,27 +34,15 @@ def get_model():
 
 @app.get("/health")
 def health():
-    """Health check endpoint - responde rápido sin cargar el modelo"""
-    try:
-        status = "ok"
-        detail = {}
-        if load_error:
-            status = "error"
-            detail["load_error"] = load_error
-        elif model is None:
-            status = "initializing"  # aún no hemos cargado el modelo (se cargará al primer /transcribe)
-        return {
-            "status": status,
-            "model": MODEL_NAME,
-            "compute_type": COMPUTE_TYPE,
-            "version": "2.0.0",
-            **detail
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+    """
+    Health check endpoint para Railway.
+    CRÍTICO: Debe responder 200 OK siempre y rápido (<100ms).
+    Railway usa este endpoint para verificar que la app está viva.
+    No debe tener lógica pesada ni dependencias del modelo.
+    """
+    # Siempre devolver 200 OK con status "ok"
+    # Railway solo necesita saber que el servidor responde
+    return {"status": "ok"}
 
 @app.get("/")
 def root():
