@@ -139,6 +139,13 @@ async def resume(
     HF_TOKEN = os.getenv("HF_TOKEN", "")
     HF_API_URL = "https://router.huggingface.co/hf-inference/models/google/pegasus-xsum"
     
+    # Verificar que la clave API esté configurada
+    if not HF_TOKEN:
+        return JSONResponse(
+            {"error": "HF_TOKEN no está configurada"},
+            status_code=500
+        )
+    
     tmp_path = None
     try:
         # Paso 1: Leer el archivo de audio
