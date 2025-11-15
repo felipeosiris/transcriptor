@@ -17,9 +17,9 @@ ENV WHISPER_MODEL=tiny
 ENV COMPUTE_TYPE=int8
 ENV PYTHONUNBUFFERED=1
 
-# Exponer puerto
+# Exponer puerto (Railway mapeará su puerto dinámico a este)
 EXPOSE 8000
 
-# Comando de inicio - Railway manejará el puerto automáticamente
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# Comando de inicio usando la variable PORT de Railway
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"
 
